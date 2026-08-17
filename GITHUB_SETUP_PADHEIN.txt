@@ -1,0 +1,86 @@
+====================================================
+GITHUB CONNECT FEATURE - SETUP GUIDE (Roman Urdu)
+====================================================
+
+NAYI FILES JO ADD HUI HAIN:
+----------------------------
+1. storage_config.php   -> sites/ aur data/ ka path decide karta hai (Railway volume support)
+2. github_config.php    -> Client ID/Secret yahan dalne hain
+3. github_helpers.php   -> GitHub API, download/extract, webhook ka code
+4. github_auth.php      -> "Connect GitHub" button click hone par ye chalta hai
+5. github_callback.php  -> GitHub se wapas aane ke baad token save karta hai
+6. github_repos.php     -> Connected account ke repos ki list laata hai
+7. github_deploy.php    -> Select ki hui repo ko deploy karta hai + webhook lagata hai
+8. webhook.php          -> GitHub push hone par ye AUTOMATIC re-deploy karta hai
+9. data/                -> deployments.json yahan save hoga (.htaccess se protected)
+
+index.php aur view.php MEIN KYA BADLA:
+----------------------------------------
+- Hero section ki 2 lines (Ignite Your Web Projects / Deploy your static...)
+  hata kar nayi likhi gayi hain.
+- Ek 3rd tab add hua hai: "GitHub" (File Upload aur Code Editor ke sath).
+- Project list mein ab GitHub se deploy ki hui site pe "synced with owner/repo"
+  ka chota badge dikhega.
+- 'sites/' folder ka path ab hardcoded nahi — storage_config.php se aata hai,
+  taake Railway volume attach karne par uploaded sites delete na hon.
+
+===================================================
+RAILWAY PAR DEPLOY KARNE SE PEHLE - VOLUME LAGAYEN
+===================================================
+Railway ka default filesystem "ephemeral" hota hai — har naye deploy (chahe
+aap khud push karen ya GitHub auto-deploy ho) par container fresh banta hai
+aur jo bhi cheezen runtime mein likhi gayi thin (uploaded sites, GitHub
+deployments ka record) delete ho jati hain. Isko rokne ke liye Volume attach
+karna zaroori hai:
+
+1. Railway dashboard -> apni service open karen
+2. "Settings" tab -> "Volumes" section -> "New Volume"
+3. Mount path likhen: /data
+   (Railway is service ko khud RAILWAY_VOLUME_MOUNT_PATH env variable dega,
+    aapko kuch manually set nahi karna — code khud pick kar lega)
+4. Save/Deploy karen
+
+Bas itna karne se aapki "sites" (uploaded/GitHub-deployed websites) aur
+"data/deployments.json" (GitHub webhook records) har redeploy ke baad bhi
+mehfooz rahenge — delete nahi honge.
+
+Agar Railway ke ilawa kisi aur host (jisme aapko persistent disk milta ho)
+par deploy kar rahe hain, to us disk ka path "STORAGE_PATH" naam ke env
+variable mein set kar dein — code wahi use karega.
+
+
+DEPLOY KARNE KE BAAD AAPKO YE 3 KAAM KARNE HAIN:
+--------------------------------------------------
+
+STEP 1: GitHub OAuth App banayen
+   - Jayen: https://github.com/settings/developers -> "New OAuth App"
+   - Application name: kuch bhi (e.g. "MR WASEEM HOSTING")
+   - Homepage URL: https://aapkidomain.com
+   - Authorization callback URL: https://aapkidomain.com/github_callback.php
+     (agar subfolder mein hai to us hisab se path lagayen)
+   - "Register application" dabayen
+   - Client ID milega turant. "Generate a new client secret" dabayen, wo bhi copy kar lein
+
+STEP 2: github_config.php open karke ye 2 lines update karen
+   define('GITHUB_CLIENT_ID', 'YAHAN_APNI_CLIENT_ID_DALEN');
+   define('GITHUB_CLIENT_SECRET', 'YAHAN_APNI_CLIENT_SECRET_DALEN');
+
+   Neeche WEBHOOK_SECRET bhi kisi bhi random lambi string se badal dein
+   (jitni ajeeb utni acchi, e.g. "kX9!mZp2Q_random_xyz_2026")
+
+STEP 3: Server pe curl aur ZipArchive extension ON hone chahiye
+   - Zyadatar shared hosting (cPanel etc) mein ye already ON hote hain
+   - Agar deploy fail ho to hosting support se "php curl extension" aur
+     "php zip extension" enable karwa lein
+
+BAS ITNA HI. Uske baad:
+------------------------
+- Website pe "GitHub" tab open karen -> "Connect GitHub" dabayen
+- GitHub login/authorize karen -> wapas apki site pe aa jayenge, connected
+- Apni repo select karen, branch (default "main"), project name dalen -> Deploy
+- Jab bhi us repo mein aap ya koi bhi push karega, aapki live site khud-ba-khud
+  update ho jayegi - dobara deploy karne ki zaroorat nahi.
+
+NOTE: Website LIVE/PUBLIC honi chahiye (localhost nahi) kyunki GitHub
+callback aur webhook dono internet se aapki site tak pohanchte hain.
+HTTPS (SSL) hona bhi strongly recommended hai.
