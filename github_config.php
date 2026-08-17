@@ -11,8 +11,8 @@
  * -------------------------------------------------------------
  */
 
-define('GITHUB_CLIENT_ID', 'YOUR_GITHUB_CLIENT_ID');
-define('GITHUB_CLIENT_SECRET', 'YOUR_GITHUB_CLIENT_SECRET');
+define('GITHUB_CLIENT_ID', 'Ov23li51iQjXnBUK6jya');
+define('GITHUB_CLIENT_SECRET', '15964dbd5241945fcf4fd1b45fdb5a112fe979e1');
 define('WEBHOOK_SECRET', 'change-this-to-a-long-random-string');
 
 // Auto-detect the base URL of this installation (no need to hardcode a domain)
