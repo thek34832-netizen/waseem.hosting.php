@@ -1,0 +1,85 @@
+====================================================
+COMPLETE UPDATE - SETUP GUIDE (Roman Urdu)
+====================================================
+Is update mein 3 badi cheezein aayi hain:
+1) Login/Signup system (har user ka apna alag account)
+2) "ZIP extension missing" wala error permanently fix
+3) Naya design - WASEEM-HACKER login page, network background,
+   top par ghoomta hua circle, har jagah aapki pic
+
+NAYI FILES (pehli dafa aa rahi hain):
+----------------------------------------
+1. auth_helpers.php     -> login/signup ka poora logic (users.json mein save hote hain)
+2. login.php            -> Login page (aapki bheji hui image jaisa design)
+3. register.php         -> Signup page (same design)
+4. logout.php           -> Logout karne ke liye
+5. simple_zip.php       -> Bina PHP zip extension ke bhi ZIP files khol sakta hai
+                           (Railway ke "ZIP extension missing" error ka fix)
+6. network-bg.js        -> Login/Signup/Hosting page ka animated network background
+7. composer.json        -> Railway ko batata hai ke zip+curl extension install kare
+                           (permanent fix, upar wali simple_zip.php backup ke tor pe hai)
+
+PURANI FILES MEIN UPDATE:
+---------------------------
+- index.php    -> login zaroori ho gaya hai, har user ka apna alag "sites" folder,
+                  top par ghoomta hua circle (aapki pic ke sath), background bhi
+                  login jaisa network wala, "Logged in as ..." bar with Logout
+- view.php     -> ab URL format hai: view.php?user=USERNAME&site=PROJECT-NAME
+                  (purane view.php?site=xyz wale links kaam nahi karenge, dobara
+                  deploy karne se naya link mil jayega)
+- github_helpers.php, github_deploy.php, github_repos.php, github_auth.php,
+  github_callback.php, webhook.php -> sab login-required ho gaye hain, aur
+  deployments ab per-user save hoti hain
+
+===================================================
+GITHUB PE UPLOAD KARTE WAQT DHYAN RAKHEIN
+===================================================
+Pichli dafa jo masla hua tha (files ke aakhir mein .txt lag gaya tha), is dafa
+usse bachne ke liye:
+- Har file ka EXACT naam wahi rakhein jo yahan diya hai (e.g. "login.php" -
+  ".txt" bilkul nahi lagna chahiye)
+- GitHub "Add file -> Upload files" mein drag-drop karte waqt naam check kar
+  lein commit karne se pehle
+
+===================================================
+DEPLOY KE BAAD YE NAYE STEPS
+===================================================
+
+STEP 1: GitHub pe upload
+   Sab files (upar di gayi list + pehle ki files jo already GitHub pe hain)
+   upload/replace kar dein, commit karen
+
+STEP 2: Railway khud naya build/deploy karega
+   1-2 minute wait karen, "Deployments" tab mein "Success" dekhein
+
+STEP 3: Sabse pehli dafa site kholenge to LOGIN PAGE aayega
+   - Koi account nahi hai, is liye "Sign up" pe click karen
+   - Username + Password bana kar account create karen
+   - Turant login ho kar dashboard khul jayega
+
+STEP 4: Purana GitHub connect dobara test karen
+   - Chunke ab per-user system hai, GitHub connect bhi dobara karna hoga
+   - Dashboard -> GitHub tab -> Connect GitHub -> Authorize
+   - Is dafa "ZIP extension missing" wala error NAHI aayega (dono tareeqon se
+     fix ho chuka hai)
+
+===================================================
+RAILWAY VOLUME (agar pehle set nahi kiya)
+===================================================
+Agar pichli dafa Railway Volume set nahi kiya tha, ye zaroor kar lein warna
+har naye deploy pe users/sites data delete ho sakta hai:
+1. Railway dashboard -> Settings -> Volumes -> New Volume
+2. Mount path: /data
+3. Save
+
+===================================================
+NOTES
+===================================================
+- Har user ka data alag file mein hai (data/users.json) - password hash ho kar
+  save hota hai, kabhi plain text mein nahi
+- Har user ki deployed sites uske apne folder mein hain (sites/{username}/...)
+  isliye 2 alag users same project-name use kar sakte hain, koi takraav nahi
+- Owner ki pic (aapki) GitHub se seedha load hoti hai is link se:
+  https://raw.githubusercontent.com/waseempathan501/Photo-link-/refs/heads/main/IMG-20260625-WA0003.jpg
+  Agar future mein pic change karni ho to bas auth_helpers.php mein
+  OWNER_PHOTO_URL wali line update kar dein
