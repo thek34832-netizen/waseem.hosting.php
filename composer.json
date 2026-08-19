@@ -1,8 +1,0 @@
-{
-    "name": "waseem/hosting-panel",
-    "description": "MR WASEEM HACKER HOSTING - requires zip & curl PHP extensions for GitHub deploy",
-    "require": {
-        "ext-zip": "*",
-        "ext-curl": "*"
-    }
-}
